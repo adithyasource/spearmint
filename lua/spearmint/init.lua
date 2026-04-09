@@ -34,9 +34,10 @@ local function set_mark()
 end
 
 local function jump()
+  local char = vim.fn.getcharstr()
   for filePath, data in pairs(globals) do
-    if data.char == vim.fn.getcharstr() then
-      vim.cmd("edit " .. filePath)
+    if data.char == char then
+      vim.cmd("edit " .. vim.fn.fnameescape(filePath))
       vim.api.nvim_win_set_cursor(0, data.pos)
     end
   end
@@ -47,7 +48,7 @@ function M.setup(opts)
 
   load()
 
-  vim.api.nvim_create_autocmd({ "CursorMoved", "BufLeave" }, {
+  vim.api.nvim_create_autocmd({ "BufLeave" }, {
     callback = function()
       local filePath = vim.api.nvim_buf_get_name(0)
       if globals[filePath] then
@@ -56,6 +57,7 @@ function M.setup(opts)
     end
   })
 
+  -- so that latest cursor saved on exit
   vim.api.nvim_create_autocmd("VimLeavePre", {
     callback = save
   })
