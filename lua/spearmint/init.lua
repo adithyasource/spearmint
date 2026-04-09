@@ -1,7 +1,9 @@
+local M = {}
+
 local marks = {}
 local globals = {}
 
-local path = vim.fn.stdpath("data") .. "/simplemarks.json"
+local path = vim.fn.stdpath("data") .. "/spearmint.json"
 
 local function save()
   local f = io.open(path, "w")
@@ -22,9 +24,7 @@ local function load()
   end
 end
 
-load()
-
-local function set()
+local function set_mark()
   local c = vim.fn.getcharstr()
   if c:match("%l") then
     local b = vim.api.nvim_get_current_buf()
@@ -54,23 +54,29 @@ local function jump()
   end
 end
 
-vim.api.nvim_create_autocmd({"CursorMoved", "BufLeave"}, {
-  callback = function()
-    local f = vim.api.nvim_buf_get_name(0)
-    local p = vim.api.nvim_win_get_cursor(0)
-    for k, g in pairs(globals) do
-      if g.f == f then
-        globals[k].p = p
+function M.setup(opts)
+  opts = opts or {}
+
+  load()
+
+  vim.api.nvim_create_autocmd({"CursorMoved", "BufLeave"}, {
+    callback = function()
+      local f = vim.api.nvim_buf_get_name(0)
+      local p = vim.api.nvim_win_get_cursor(0)
+      for k, g in pairs(globals) do
+        if g.f == f then
+          globals[k].p = p
+        end
       end
     end
-  end
-})
+  })
 
-vim.api.nvim_create_autocmd("VimLeavePre", {
-  callback = save
-})
+  vim.api.nvim_create_autocmd("VimLeavePre", {
+    callback = save
+  })
 
-vim.keymap.set("n", "m", set)
-vim.keymap.set("n", "'", jump)
+  vim.keymap.set("n", opts.set_key or "m", set_mark)
+  vim.keymap.set("n", opts.jump_key or "'", jump)
+end
 
-print("plugin loaded")
+return M
