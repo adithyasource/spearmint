@@ -41,26 +41,31 @@ local function jump()
   end
 end
 
+local function update_pos()
+  local filePath = vim.api.nvim_buf_get_name(0)
+  local pos = vim.api.nvim_win_get_cursor(0)
+  for char, toJumpData in pairs(globals) do
+    if toJumpData.filePath == filePath then
+      globals[char].pos = pos
+    end
+  end
+end
+
 function M.setup(opts)
   opts = opts or {}
 
   load()
 
   vim.api.nvim_create_autocmd({ "BufLeave" }, {
-    callback = function()
-      local filePath = vim.api.nvim_buf_get_name(0)
-      local pos = vim.api.nvim_win_get_cursor(0)
-      for char, toJumpData in pairs(globals) do
-        if toJumpData.filePath == filePath then
-          globals[char].pos = pos
-        end
-      end
-    end
+    callback = update_pos
   })
 
   -- so that latest cursor saved on exit
-  vim.api.nvim_create_autocmd("VimLeavePre", {
-    callback = save
+  vim.api.nvim_create_autocmd("BufWinLeave", {
+    callback = function()
+      update_pos()
+      save()
+    end
   })
 
   vim.keymap.set("n", opts.set_key or "m", set_mark)
