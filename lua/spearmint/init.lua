@@ -22,8 +22,10 @@ local function load()
 end
 
 local function set_mark()
+  local projectPath = vim.fn.getcwd()
   local char = vim.fn.getcharstr()
-  globals[char] = {
+  globals[projectPath] = globals[projectPath] or {}
+  globals[projectPath][char] = {
     filePath = vim.api.nvim_buf_get_name(0),
     pos = vim.api.nvim_win_get_cursor(0)
   }
@@ -31,8 +33,9 @@ local function set_mark()
 end
 
 local function jump()
+  local projectPath = vim.fn.getcwd()
   local char = vim.fn.getcharstr()
-  local toJump = globals[char]
+  local toJump = globals[projectPath][char]
   if toJump then
     vim.cmd("edit " .. vim.fn.fnameescape(toJump.filePath))
     vim.api.nvim_win_set_cursor(0, toJump.pos)
@@ -40,11 +43,16 @@ local function jump()
 end
 
 local function update_pos()
+  local projectPath = vim.fn.getcwd()
+  local pathData = globals[projectPath]
+  if not pathData then
+    return
+  end
   local filePath = vim.api.nvim_buf_get_name(0)
   local pos = vim.api.nvim_win_get_cursor(0)
-  for char, toJumpData in pairs(globals) do
+  for char, toJumpData in pairs(pathData) do
     if toJumpData.filePath == filePath then
-      globals[char].pos = pos
+      globals[projectPath][char].pos = pos
     end
   end
 end
