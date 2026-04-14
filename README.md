@@ -43,3 +43,6 @@ pass an updated table to the setup function to change the keymaps; example:
     set_key = "<C-h>"
   })
   ```
+
+## why?
+i wanted something not as heavy as harpoon; it has a ui which i end up not using often, so i ended up using default vim marks but they had no project context and required me to hit caps lock for setting "global" marks. thus, i ended up making this: has project wise marks, really lightweight and works with terminal buffers :]
