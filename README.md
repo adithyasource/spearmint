@@ -6,7 +6,7 @@ a [harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2) style upgrade
 
 with nvim 0.12.0+
   ```lua
-  vim.pack.add({ "https://github.com/adithyasource/spearmint" })
+  vim.pack.add({ "https://github.com/adithyasource/spearmint.nvim" })
   ```
 
 or add `adithyasource/spearmint` to your favourite package manager of choice
