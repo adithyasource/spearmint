@@ -2,6 +2,7 @@ local M = {}
 local globals = {}
 local path = vim.fn.stdpath("data") .. "/spearmint.json"
 
+
 local function save()
   local file = io.open(path, "w")
   if file then
@@ -25,10 +26,19 @@ local function set_mark()
   local projectPath = vim.fn.getcwd()
   local char = vim.fn.getcharstr()
   globals[projectPath] = globals[projectPath] or {}
-  globals[projectPath][char] = {
-    filePath = vim.api.nvim_buf_get_name(0),
-    pos = vim.api.nvim_win_get_cursor(0)
-  }
+  if vim.bo.buftype == 'terminal' then
+    globals[projectPath][char] = {
+      type = "term",
+      pos = vim.api.nvim_win_get_cursor(0),
+      termBuf = vim.api.nvim_get_current_buf(),
+    }
+  else
+    globals[projectPath][char] = {
+      type = "file",
+      pos = vim.api.nvim_win_get_cursor(0),
+      filePath = vim.api.nvim_buf_get_name(0),
+    }
+  end
   save()
 end
 
@@ -36,10 +46,27 @@ local function jump()
   local projectPath = vim.fn.getcwd()
   local char = vim.fn.getcharstr()
   local toJump = globals[projectPath][char]
-  if toJump then
+
+  if not toJump then return end
+
+  if toJump.type == "file" then
     vim.cmd("edit " .. vim.fn.fnameescape(toJump.filePath))
     vim.api.nvim_win_set_cursor(0, toJump.pos)
+    return
   end
+
+  if vim.api.nvim_buf_is_valid(toJump.termBuf) then
+    vim.api.nvim_set_current_buf(toJump.termBuf)
+    return
+  end
+
+  vim.cmd("terminal")
+
+  globals[projectPath][char] = {
+    type = "term",
+    pos = vim.api.nvim_win_get_cursor(0),
+    termBuf = vim.api.nvim_get_current_buf(),
+  }
 end
 
 local function update_pos()
