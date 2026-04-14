@@ -1,6 +1,6 @@
 # spearmint
 
-a [harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2) style upgrade to default neo/vim marks but in ~69 LOC (nice)
+a [harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2) style upgrade to default neovim / vim marks but in ~100 LOC
 
 ## to install
 
