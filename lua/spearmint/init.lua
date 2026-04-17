@@ -16,8 +16,15 @@ local function load()
   if file then
     local store = file:read("*a")
     file:close()
-    if store and store ~= "" then
-      globals = vim.fn.json_decode(store)
+
+    if not store and store ~= "" then return end
+
+    local ok, decoded = pcall(vim.json.decode, store)
+    if ok then
+      globals = decoded
+    else
+      print("stored data invalid; resetting")
+      globals = {}
     end
   end
 end
