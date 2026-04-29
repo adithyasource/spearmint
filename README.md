@@ -2,6 +2,10 @@
 
 no bs upgrade to default neovim marks but in ~100 LOC
 
+## demo
+
+https://github.com/user-attachments/assets/b2264a19-f778-468c-aab4-85cd73112885
+
 ## to install
 
 with nvim 0.12.0+
